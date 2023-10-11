@@ -1,58 +1,67 @@
 package com.Dima1302.TelegramCategoryBot.service;
 
+import com.Dima1302.TelegramCategoryBot.messageSender.MessageSender;
 import com.Dima1302.TelegramCategoryBot.entity.Category;
-import com.Dima1302.TelegramCategoryBot.listener.TelegramCategoryBot;
 import com.Dima1302.TelegramCategoryBot.repository.CategoryRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.util.*;
 
+/**
+ * Сервис для работы с категориями.
+ */
+
 public class CategoryService {
-    //логика по работе с деревом категорий
     private final CategoryRepository categoryRepository;
-    private final TelegramCategoryBot telegramBot;
-    // Конструктор класса, принимающий репозиторий категорий и экземпляр Telegram бота для инициализации сервиса
-    public CategoryService(CategoryRepository categoryRepository, TelegramCategoryBot telegramBot) {
+    private final MessageSender messageSender;
+    private final Logger logger = LoggerFactory.getLogger(CategoryService.class);
+
+    /**
+     * Конструктор класса.
+     *
+     * @param categoryRepository Репозиторий категорий.
+     * @param messageSender      Отправитель сообщений.
+     */
+    public CategoryService(CategoryRepository categoryRepository, MessageSender messageSender) {
         this.categoryRepository = categoryRepository;
-        this.telegramBot = telegramBot;
+        this.messageSender = messageSender;
     }
-    // Метод для генерации древовидной структуры категорий и возврата её в виде текста
+
+    /**
+     * Генерирует древовидное представление категорий.
+     *
+     * @return Древовидное представление категорий в виде строки.
+     */
     public String generateCategoryTree() {
-        // Строим карту категорий
         Map<Long, List<Category>> categoryMap = buildCategoryMap(categoryRepository.findAll());
-        // Преобразуем карту в текстовое представление
         return stringifyCategoryTree(categoryMap, 0, 0);
     }
-    // Метод для построения карты категорий, сгруппированных по родительским ID
+
     private Map<Long, List<Category>> buildCategoryMap(List<Category> categories) {
         Map<Long, List<Category>> categoryMap = new HashMap<>();
 
-        // Группируем категории по родительским ID
         for (Category category : categories) {
-            long parentId = category.getParent() != null ? category.getParent().getId() : 0; // Если нет родителя, то parentId = 0
+            long parentId = category.getParent() != null ? category.getParent().getId() : 0;
             categoryMap.computeIfAbsent(parentId, k -> new ArrayList<>()).add(category);
         }
 
         return categoryMap;
     }
 
-    // Метод для преобразования карты категорий в текстовое представление
     private String stringifyCategoryTree(Map<Long, List<Category>> categoryMap, long parentId, int depth) {
         StringBuilder treeBuilder = new StringBuilder();
 
-        // Получаем список дочерних категорий для данного родителя
         List<Category> children = categoryMap.getOrDefault(parentId, Collections.emptyList());
 
-        // Перебираем дочерние категории
         for (Category child : children) {
-            // Добавляем отступы в зависимости от уровня вложенности
             for (int i = 0; i < depth; i++) {
-                treeBuilder.append("  "); // Просто пробелы для отступа
+                treeBuilder.append("  ");
             }
 
-            // Добавляем название текущей категории
             treeBuilder.append("- ").append(child.getName()).append("\n");
 
-            // Рекурсивно обходим дочерние категории
             String childTree = stringifyCategoryTree(categoryMap, child.getId(), depth + 1);
             treeBuilder.append(childTree);
         }
@@ -60,45 +69,44 @@ public class CategoryService {
         return treeBuilder.toString();
     }
 
-    // Метод для удаления категории и её дочерних категорий по имени
+    /**
+     * Удаляет категорию и все её дочерние категории.
+     *
+     * @param categoryName Имя категории для удаления.
+     */
     public void removeElement(String categoryName) {
-        // Находим категорию, которую нужно удалить
         Category categoryToRemove = categoryRepository.findByName(categoryName);
 
         if (categoryToRemove == null) {
-            System.out.println("Категория не найдена");
+            logger.error("Категория не найдена: " + categoryName);
             return;
         }
 
-        // Удаляем категорию и все её дочерние категории
         categoryRepository.delete(categoryToRemove);
-
-        System.out.println("Категория '" + categoryName + "' и все её дочерние категории удалены");
+        logger.info("Категория '" + categoryName + "' и все её дочерние категории удалены");
     }
-    // Метод для добавления дочерней категории к родительской
+
+    /**
+     * Добавляет дочернюю категорию к родительской категории.
+     *
+     * @param parentCategoryName Имя родительской категории.
+     * @param childCategoryName  Имя дочерней категории.
+     * @param chatId             Идентификатор чата для отправки уведомлений.
+     */
     public void addElement(String parentCategoryName, String childCategoryName, long chatId) {
-        // Находим родительскую категорию
         Optional<Category> optionalParentCategory = Optional.ofNullable(categoryRepository.findByName(parentCategoryName));
 
         if (optionalParentCategory.isEmpty()) {
-            telegramBot.sendMessage(String.valueOf(chatId), "Родительская категория не найдена");
+            messageSender.sendMessage(String.valueOf(chatId), "Родительская категория не найдена");
             return;
         }
 
-        // Создаем новую дочернюю категорию
         Category childCategory = new Category();
         childCategory.setName(childCategoryName);
         childCategory.setParent(optionalParentCategory.get());
 
-        // Сохраняем дочернюю категорию в базу данных
         categoryRepository.save(childCategory);
 
-        // Используем экземпляр telegramBot для отправки сообщения пользователю
-        telegramBot.sendMessage(String.valueOf(chatId), "Категория '" + childCategoryName + "' добавлена к категории '" + parentCategoryName + "'");
+        messageSender.sendMessage(String.valueOf(chatId), "Категория '" + childCategoryName + "' добавлена к категории '" + parentCategoryName + "'");
     }
-
 }
-
-
-
-
