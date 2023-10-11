@@ -14,9 +14,10 @@ public class Category {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "parent_id")
     private Category parent;
+
 
     /**
      * Получение идентификатора категории.

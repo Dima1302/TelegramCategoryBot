@@ -2,6 +2,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
 
+    <!-- Создаем таблицу categories -->
     <changeSet id="create-categories-table" author="Dmitriy Vassilchenko">
         <createTable tableName="categories">
             <column name="id" type="BIGINT">
@@ -13,4 +14,15 @@
             <column name="parent_id" type="BIGINT"/>
         </createTable>
     </changeSet>
+
+
+    <changeSet id="add-foreign-key" author="Dmitriy Vassilchenko">
+        <addForeignKeyConstraint baseColumnNames="parent_id"
+                                 baseTableName="categories"
+                                 constraintName="fk_categories_parent"
+                                 referencedColumnNames="id"
+                                 referencedTableName="categories"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
 </databaseChangeLog>
