@@ -1,27 +1,51 @@
 package com.Dima1302.TelegramCategoryBot.listener;
 
-import com.Dima1302.TelegramCategoryBot.category.CategoryTree;
-import com.Dima1302.TelegramCategoryBot.repository.CategoryRepository;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import com.Dima1302.TelegramCategoryBot.messageSender.MessageSender;
+import com.Dima1302.TelegramCategoryBot.service.CategoryService;
+import com.Dima1302.TelegramCategoryBot.сommand.Command;
+import com.Dima1302.TelegramCategoryBot.сommand.CommandContainer;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import org.telegram.telegrambots.meta.generics.BotOptions;
+import org.telegram.telegrambots.meta.generics.LongPollingBot;
 
-public class TelegramCategoryBot extends TelegramLongPollingBot {
+/**
+ * Класс, представляющий бота для категоризации и выполнения команд в Telegram.
+ * <p>
+ * Этот бот способен обрабатывать команды, начинающиеся с префикса '/' и вызывать соответствующие
+ * обработчики команд, реализованные с использованием классов-команд и хранящихся в CommandContainer.
+ *
+ * @author Васильченко Дмитрий
+ */
 
-    private final CategoryTree categoryTree;
+public class TelegramCategoryBot implements LongPollingBot {
+    private final CategoryService categoryService;
+    private final Logger logger = LoggerFactory.getLogger(TelegramCategoryBot.class);
+    private final MessageSender messageSender;
 
-    public TelegramCategoryBot(CategoryRepository categoryRepository) {
-        this.categoryTree = new CategoryTree(categoryRepository);
-    }
+    private final CommandContainer commandContainer;
+    private static final String COMMAND_PREFIX = "/";
 
-    @Override
-    public String getBotUsername() {
-        return "treecategory_bot";
-    }
+    @Value("${BotUsername}")
+    private String botUsername;
 
-    @Override
-    public String getBotToken() {
-        return "6292690781:AAFx5wPsdBZp-ynwMsux8_-4LCldGZGNYsA";
+    @Value("${BotToken}")
+    private String botToken;
+
+    /**
+     * Конструктор класса TelegramCategoryBot.
+     *
+     * @param categoryService  Сервис для работы с категориями.
+     * @param messageSender    Объект для отправки сообщений в Telegram.
+     * @param commandContainer Контейнер команд для обработки входящих сообщений.
+     */
+    public TelegramCategoryBot(CategoryService categoryService, MessageSender messageSender, CommandContainer commandContainer) {
+        this.categoryService = categoryService;
+        this.messageSender = messageSender;
+        this.commandContainer = commandContainer;
     }
 
     @Override
@@ -30,52 +54,34 @@ public class TelegramCategoryBot extends TelegramLongPollingBot {
             long chatId = update.getMessage().getChatId();
             String text = update.getMessage().getText();
 
-            if ("/start".equals(text)) {
-                sendMessage(Long.parseLong(String.valueOf(chatId)), "Привет, я ваш бот!"); // Преобразуем chatId в строку
-            } else if ("/help".equals(text)) {
-                sendMessage(Long.parseLong(String.valueOf(chatId)), "Список доступных команд: /viewTree, /addElement, /removeElement"); // Преобразуем chatId в строку
-            } else if ("/viewTree".equals(text)) {
-                String categoryTreeText = categoryTree.generateCategoryTree();
-                sendMessage(Long.parseLong(String.valueOf(chatId)), categoryTreeText); // Преобразуем chatId в строку
-            } else if (text.startsWith("/addElement")) {
-                String[] parts = text.split(" ");
-                if (parts.length >= 2) {
-                    String parentCategory = parts[1];
-                    String childCategory = parts[2];
-                    categoryTree.addElement(parentCategory, childCategory); // Меняем эту строку
-                } else {
-                    sendMessage(Long.parseLong(String.valueOf(chatId)), "Использование: /addElement <родительская категория> <дочерняя категория>"); // Преобразуем chatId в строку
-                }
-            } else if (text.startsWith("/removeElement")) {
-                String category = text.replace("/removeElement", "").trim();
-                categoryTree.removeElement(category); // Меняем эту строку
+            if (text.startsWith(COMMAND_PREFIX)) {
+                String commandIdentifier = text.split(" ")[0].toLowerCase();
+                Command command = commandContainer.getCommand(commandIdentifier);
+                command.execute(update);
             } else {
-                sendMessage(Long.parseLong(String.valueOf(chatId)), "Извините, я не понял вашей команды."); // Преобразуем chatId в строку
+                messageSender.sendMessage(String.valueOf(chatId), "Извините, я не понял вашей команды.");
             }
         }
     }
 
 
-    private void sendMessage(long chatId, String text) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(String.valueOf(chatId));
-        sendMessage.setText(text);
-        try {
-            execute(sendMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @Override
+    public BotOptions getOptions() {
+        return null;
     }
 
+    @Override
+    public void clearWebhook() throws TelegramApiRequestException {
 
+    }
+
+    @Override
+    public String getBotUsername() {
+        return botUsername;
+    }
+
+    @Override
+    public String getBotToken() {
+        return botToken;
+    }
 }
-
-
-
-
-
-
-
-
-
-

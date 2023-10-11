@@ -1,0 +1,47 @@
+20:17:58.741 [main] INFO  c.D.T.TelegramCategoryBotApplication - Starting TelegramCategoryBotApplication using Java 18.0.1.1 with PID 7920 (C:\Users\ДимаЛиза\Downloads\TelegramCategoryBot\TelegramCategoryBot\target\classes started by Дима in C:\Users\ДимаЛиза\Downloads\TelegramCategoryBot)
+20:17:58.745 [main] INFO  c.D.T.TelegramCategoryBotApplication - No active profile set, falling back to 1 default profile: "default"
+20:17:59.373 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+20:17:59.455 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 71 ms. Found 1 JPA repository interfaces.
+20:18:00.010 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8080 (http)
+20:18:00.020 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+20:18:00.022 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+20:18:00.023 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.13]
+20:18:00.126 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+20:18:00.127 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1337 ms
+20:18:00.276 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+20:18:00.603 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7a083b96
+20:18:00.605 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+20:18:00.778 [main] INFO  liquibase.database - Set default schema name to public
+20:18:01.210 [main] INFO  liquibase.executor - Changelog query completed.
+20:18:01.216 [main] INFO  liquibase.executor - Changelog query completed.
+20:18:01.220 [main] INFO  liquibase.executor - Changelog query completed.
+20:18:01.223 [main] INFO  liquibase.executor - Changelog query completed.
+20:18:01.227 [main] INFO  liquibase.executor - Changelog query completed.
+20:18:01.228 [main] INFO  liquibase.lockservice - Successfully acquired change log lock
+20:18:01.260 [main] INFO  liquibase.changelog - Creating database history table with name: public.databasechangelog
+20:18:01.269 [main] INFO  liquibase.executor - Changelog query completed.
+20:18:01.271 [main] INFO  liquibase.changelog - Reading from public.databasechangelog
+20:18:01.275 [main] INFO  liquibase.executor - Changelog query completed.
+20:18:01.277 [main] INFO  liquibase.executor - Changelog query completed.
+20:18:01.344 [main] INFO  liquibase.changelog - Table categories created
+20:18:01.346 [main] INFO  liquibase.changelog - ChangeSet liquibase/table/create-table.xml::create-categories-table::Dmitriy Vassilchenko ran successfully in 9ms
+20:18:01.350 [main] INFO  liquibase.executor - Changelog query completed.
+20:18:01.352 [main] INFO  liquibase.executor - Changelog query completed.
+20:18:01.354 [main] INFO  liquibase - Update command completed successfully.
+20:18:01.356 [main] INFO  liquibase.executor - Changelog query completed.
+20:18:01.356 [main] INFO  liquibase.lockservice - Successfully released change log lock
+20:18:01.437 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+20:18:01.511 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.2.9.Final
+20:18:01.514 [main] INFO  org.hibernate.cfg.Environment - HHH000406: Using bytecode reflection optimizer
+20:18:01.706 [main] INFO  o.h.b.i.BytecodeProviderInitiator - HHH000021: Bytecode provider name : bytebuddy
+20:18:01.884 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+20:18:02.211 [main] INFO  o.h.b.i.BytecodeProviderInitiator - HHH000021: Bytecode provider name : bytebuddy
+20:18:03.216 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+20:18:03.277 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+20:18:03.323 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+20:18:04.155 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+20:18:04.192 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http) with context path ''
+20:18:04.199 [main] INFO  c.D.T.TelegramCategoryBotApplication - Started TelegramCategoryBotApplication in 5.827 seconds (process running for 7.743)
+20:22:21.900 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+20:22:21.937 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+20:22:21.963 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
